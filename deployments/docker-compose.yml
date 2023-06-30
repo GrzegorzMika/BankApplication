@@ -1,0 +1,20 @@
+version: "3.9"
+
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg14
+    restart: on-failure
+    environment:
+      - POSTGRES_PASSWORD=password
+      - TS_TUNE_MAX_CONNS=1000
+      - POSTGRES_DB=bank_tests
+    ports:
+      - "54322:5432"
+    volumes:
+      - "./postgres_data:/var/lib/postgresql/data"
+    healthcheck:
+      test: "pg_isready -U postgres"
+      start_period: 10s
+      interval: 2s
+      timeout: 2s
+      retries: 3
