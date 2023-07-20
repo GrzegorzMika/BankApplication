@@ -1,9 +1,9 @@
 CREATE TABLE IF NOT EXISTS accounts
 (
     id         bigserial primary key,
-    owner      varchar        not null,
-    balance    decimal(10, 2) not null,
-    currency   char(3)        not null,
+    owner      varchar not null,
+    balance    float   not null,
+    currency   char(3) not null,
     created_at timestamp with time zone default now()
 );
 
@@ -12,8 +12,8 @@ CREATE INDEX IF NOT EXISTS owner_idx ON accounts (owner);
 CREATE TABLE IF NOT EXISTS entries
 (
     id         bigserial primary key,
-    account_id bigint         not null references accounts (id) on delete cascade,
-    amount     decimal(10, 2) not null,
+    account_id bigint not null references accounts (id) on delete cascade,
+    amount     float  not null,
     created_at timestamp with time zone default now()
 );
 
@@ -22,9 +22,9 @@ CREATE INDEX IF NOT EXISTS account_idx ON entries (account_id);
 CREATE TABLE IF NOT EXISTS transfers
 (
     id              bigserial primary key,
-    from_account_id bigint         not null references accounts (id) on delete cascade,
-    to_account_id   bigint         not null references accounts (id) on delete cascade,
-    amount          decimal(10, 2) not null check (amount > 0),
+    from_account_id bigint not null references accounts (id) on delete cascade,
+    to_account_id   bigint not null references accounts (id) on delete cascade,
+    amount          float  not null check (amount > 0),
     created_at      timestamp with time zone default now()
 );
 

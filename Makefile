@@ -10,4 +10,7 @@ migrate:
 sqlc:
 	sqlc generate
 
-.PHONY: sqlc migrate up down
+test:
+	sudo go test -cover -v ./...
+
+.PHONY: sqlc migrate up down test
