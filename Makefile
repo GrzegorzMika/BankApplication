@@ -11,6 +11,9 @@ sqlc:
 	sqlc generate
 
 test:
-	sudo go test -cover -v ./...
+	sudo go test -shuffle=on -cover -v -coverprofile=coverage/coverage.out ./...
 
-.PHONY: sqlc migrate up down test
+show_coverage:
+	go tool cover -html=coverage/coverage.out
+
+.PHONY: sqlc migrate up down test show_coverage
