@@ -86,6 +86,16 @@ func (s *Store) TransferTx(ctx context.Context, arg TransferTxParams) (TransferT
 			return err
 		}
 
+		result.FromAccount, err = queries.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
+			ID:     arg.FromAccountId,
+			Amount: -arg.Amount,
+		})
+
+		result.ToAccount, err = queries.UpdateAccountBalance(ctx, UpdateAccountBalanceParams{
+			ID:     arg.ToAccountId,
+			Amount: arg.Amount,
+		})
+
 		return nil
 	})
 
