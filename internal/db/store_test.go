@@ -100,3 +100,49 @@ func TestTransferTx(t *testing.T) {
 	require.InDelta(t, accoount1.Balance-float64(n)*amount, updatedAccount1.Balance, 0.001)
 	require.InDelta(t, accoount2.Balance+float64(n)*amount, updatedAccount2.Balance, 0.001)
 }
+
+func TestTransferTwoDirectionsTx(t *testing.T) {
+	store := NewStore(testDB)
+
+	_, accoount1 := createRandomAccount(t)
+	_, accoount2 := createRandomAccount(t)
+
+	// run n concurrent transfer transactions
+	n := 10
+	amount := util.RandomMoney()
+
+	errs := make(chan error)
+
+	for i := 0; i < n; i++ {
+		fromAccountId := accoount1.ID
+		toAccountId := accoount2.ID
+
+		if i%2 == 0 {
+			fromAccountId = accoount2.ID
+			toAccountId = accoount1.ID
+		}
+
+		go func() {
+			_, err := store.TransferTx(context.Background(), TransferTxParams{
+				FromAccountId: fromAccountId,
+				ToAccountId:   toAccountId,
+				Amount:        amount,
+			})
+
+			errs <- err
+		}()
+	}
+
+	for i := 0; i < n; i++ {
+		err := <-errs
+		require.NoError(t, err)
+	}
+
+	updatedAccount1, err := store.GetAccount(context.Background(), accoount1.ID)
+	require.NoError(t, err)
+	updatedAccount2, err := store.GetAccount(context.Background(), accoount2.ID)
+	require.NoError(t, err)
+
+	require.InDelta(t, accoount1.Balance, updatedAccount1.Balance, 0.001)
+	require.InDelta(t, accoount2.Balance, updatedAccount2.Balance, 0.001)
+}
