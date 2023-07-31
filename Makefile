@@ -19,4 +19,7 @@ test_with_coverage:
 show_coverage:
 	go tool cover -html=coverage/coverage.out
 
-.PHONY: sqlc migrate up down test test_with_coverage show_coverage
+server:
+	go run main.go
+
+.PHONY: sqlc migrate up down test test_with_coverage show_coverage server
