@@ -6,24 +6,25 @@ import (
 
 	"BankApplication/internal/api"
 	"BankApplication/internal/db"
+	"BankApplication/internal/util"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-const (
-	dbSource      = "postgres://postgres:password@localhost:54322/bank_tests?sslmode=disable"
-	serverAddress = "localhost:8080"
-)
-
 func main() {
-	conn, err := pgxpool.New(context.Background(), dbSource)
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	conn, err := pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
 		log.Fatalln("Cannot connect to db: ", err)
 	}
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 	if err != nil {
 		log.Fatalln("Cannot start server: ", err)
 	}
