@@ -10,6 +10,9 @@ migrate:
 sqlc:
 	sqlc generate
 
+generate_mocks:
+	mockgen -package mockdb -destination internal/db/mocks/store.go BankApplication/internal/db Store
+
 test:
 	sudo go test -shuffle=on -cover -v ./...
 
@@ -22,4 +25,4 @@ show_coverage:
 server:
 	go run main.go
 
-.PHONY: sqlc migrate up down test test_with_coverage show_coverage server
+.PHONY: sqlc migrate up down test test_with_coverage show_coverage server generate_mocks
