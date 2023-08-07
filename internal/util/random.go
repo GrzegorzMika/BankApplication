@@ -14,7 +14,7 @@ const (
 	letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQ"
 )
 
-var currencies = []string{"USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF"}
+var currencies = []string{USD, EUR, CAD}
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
