@@ -10,6 +10,7 @@ import (
 )
 
 func createRandomEntry(t *testing.T) (CreateEntryParams, Entry) {
+	_, user := createRandomUser(t)
 	arg := CreateEntryParams{
 		AccountID: util.RandomAccountID(),
 		Amount:    util.RandomMoney(),
@@ -18,7 +19,7 @@ func createRandomEntry(t *testing.T) (CreateEntryParams, Entry) {
 	// due to the foreign key constraint on accounts, we need to create the account first
 	query := `INSERT INTO accounts (id, owner, balance, currency) VALUES ($1, $2, $3, $4)`
 	_, err := testQueries.db.Exec(context.Background(), query, arg.AccountID,
-		util.RandomOwner(), util.RandomMoney(), util.RandomCurrency())
+		user.Username, util.RandomMoney(), util.RandomCurrency())
 	require.NoError(t, err)
 
 	entry, err := testQueries.CreateEntry(context.Background(), arg)
@@ -53,12 +54,13 @@ func TestGetEntry(t *testing.T) {
 }
 
 func TestListEntries(t *testing.T) {
+	_, user := createRandomUser(t)
 	accountID := util.RandomAccountID()
 
 	// due to the foreign key constraint on accounts, we need to create the account first
 	query := `INSERT INTO accounts (id, owner, balance, currency) VALUES ($1, $2, $3, $4)`
 	_, err := testQueries.db.Exec(context.Background(), query, accountID,
-		util.RandomOwner(), util.RandomMoney(), util.RandomCurrency())
+		user.Username, util.RandomMoney(), util.RandomCurrency())
 	require.NoError(t, err)
 
 	for i := 0; i < 20; i++ {

@@ -65,3 +65,8 @@ func RandomCurrency() string {
 func RandomAccountID() int64 {
 	return int64(RandomPositiveInt(100000000000))
 }
+
+// RandomEmail returns a random email address.
+func RandomEmail() string {
+	return RandomString(10) + "@email.com"
+}

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS
+CREATE TABLE IF NOT EXISTS accounts
 (
     id         bigserial primary key,
     owner      varchar not null,
