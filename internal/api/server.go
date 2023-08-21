@@ -1,9 +1,12 @@
 package api
 
 import (
+	"fmt"
 	"log"
 
 	"BankApplication/internal/db"
+	"BankApplication/internal/token"
+	"BankApplication/internal/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -12,15 +15,24 @@ import (
 
 // Server serves HTTP requests for banking application.
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	store      db.Store
+	tokenMaker token.Maker
+	router     *gin.Engine
+	config     util.Config
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{
-		store: store,
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create token maker: %w", err)
 	}
-	router := gin.Default()
+
+	server := &Server{
+		store:      store,
+		tokenMaker: tokenMaker,
+		router:     gin.Default(),
+		config:     config,
+	}
 
 	if val, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		err := val.RegisterValidation("currency", ValidCurrency)
@@ -28,17 +40,19 @@ func NewServer(store db.Store) *Server {
 			log.Println("Failed to register validator: ", err)
 		}
 	}
+	server.setupRouter()
+	return server, nil
+}
 
-	router.POST("/users", server.createUser)
+func (s *Server) setupRouter() {
+	s.router.POST("/users", s.createUser)
+	s.router.POST("/users/login", s.loginUser)
 
-	router.POST("/accounts", server.createAccount)
-	router.GET("/accounts/:id", server.getAccount)
-	router.GET("/accounts", server.listAccount)
+	s.router.POST("/accounts", s.createAccount)
+	s.router.GET("/accounts/:id", s.getAccount)
+	s.router.GET("/accounts", s.listAccount)
 
-	router.POST("/transfers", server.createTransfer)
-
-	server.router = router
-	return server
+	s.router.POST("/transfers", s.createTransfer)
 }
 
 func (s *Server) Start(address string) error {
