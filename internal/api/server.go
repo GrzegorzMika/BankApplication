@@ -48,11 +48,13 @@ func (s *Server) setupRouter() {
 	s.router.POST("/users", s.createUser)
 	s.router.POST("/users/login", s.loginUser)
 
-	s.router.POST("/accounts", s.createAccount)
-	s.router.GET("/accounts/:id", s.getAccount)
-	s.router.GET("/accounts", s.listAccount)
+	authRoutes := s.router.Group("/").Use(authMiddleware(s.tokenMaker))
 
-	s.router.POST("/transfers", s.createTransfer)
+	authRoutes.POST("/accounts", s.createAccount)
+	authRoutes.GET("/accounts/:id", s.getAccount)
+	authRoutes.GET("/accounts", s.listAccount)
+
+	authRoutes.POST("/transfers", s.createTransfer)
 }
 
 func (s *Server) Start(address string) error {
