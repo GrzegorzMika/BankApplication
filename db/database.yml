@@ -9,4 +9,4 @@ development:
   pool: 5
 
 production:
-  url: {{envOr "DB_PRODUCTION" "postgres://postgres:password@localhost:5432/bank_tests?sslmode=disable"}}
+  url: {{envOr "DB_SOURCE" "postgres://postgres:password@localhost:5432/bank_tests?sslmode=disable"}}
