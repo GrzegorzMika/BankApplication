@@ -3,7 +3,7 @@
 set -e
 
 echo "run db migration"
-source /app/app.env
+cp /app/app.env .env
 /app/soda migrate up -p /db -c /db/database.yml
 
 echo "start the application"
