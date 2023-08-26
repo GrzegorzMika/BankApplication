@@ -13,10 +13,10 @@ FROM alpine:3.18 AS app
 WORKDIR /app
 
 COPY ./db/migrations ./db/database.yml /db/
-COPY ./start.sh .
 COPY --from=builder /app/main .
 COPY --from=builder /app/app.env .
 COPY --from=builder /go/bin/soda ./soda
+COPY ./start.sh .
 
 RUN chmod a+x /app/soda
 
