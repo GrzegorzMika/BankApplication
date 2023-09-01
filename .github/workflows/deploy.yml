@@ -9,6 +9,7 @@ on:
 
 env:
   AWS_REGION : "eu-north-1"
+  CLUSTER_NAME: "bank-application"
 
 permissions:
   id-token: write   # This is required for requesting the JWT
@@ -26,7 +27,7 @@ jobs:
       - name: Install kubectl
         uses: azure/setup-kubectl@v3
         with:
-          version: 'v1.28.1'
+          version: 'v1.27'
         id: install
 
       - name: Configure AWS credentials
@@ -56,7 +57,7 @@ jobs:
 
       - name: Update kubernetes configuration
         run: |
-          aws eks update-kubeconfig --name bank-application --region ${{ env.AWS_REGION }}
+          aws eks update-kubeconfig --name ${{ env.CLUSTER_NAME }} --region ${{ env.AWS_REGION }}
 
       - name: Deploy image to Amazon EKS
         run: |
