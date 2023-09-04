@@ -35,5 +35,6 @@ proto:
         --openapiv2_out=doc/swagger \
         --openapiv2_opt=allow_merge=true,merge_file_name=bank_application \
         internal/proto/*.proto
+#    /home/grzegorz/go/bin/statik -src=./doc/swagger -dest=./doc
 
 .PHONY: sqlc migrate up down test test_with_coverage show_coverage server generate_mocks proto
