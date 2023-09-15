@@ -19,10 +19,19 @@ import (
 )
 
 func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.UpdateUserResponse, error) {
+	authPayload, err := server.authorizeUser(ctx)
+	if err != nil {
+		return nil, unauthenticatedError(err)
+	}
+
 	violations := validateUpdateUserRequest(req)
 	if violations != nil {
 		log.Printf("Invalid request: %v", violations)
 		return nil, invalidArgumentError(violations)
+	}
+
+	if authPayload.Username != req.Username {
+		return nil, status.Error(codes.PermissionDenied, "You are not the owner of this user")
 	}
 
 	arg := db.UpdateUserParams{
