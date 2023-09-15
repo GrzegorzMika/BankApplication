@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	BankApplication_CreateUser_FullMethodName = "/pb.BankApplication/CreateUser"
+	BankApplication_UpdateUser_FullMethodName = "/pb.BankApplication/UpdateUser"
 	BankApplication_LoginUser_FullMethodName  = "/pb.BankApplication/LoginUser"
 )
 
@@ -28,6 +29,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BankApplicationClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
 }
 
@@ -48,6 +50,15 @@ func (c *bankApplicationClient) CreateUser(ctx context.Context, in *CreateUserRe
 	return out, nil
 }
 
+func (c *bankApplicationClient) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error) {
+	out := new(UpdateUserResponse)
+	err := c.cc.Invoke(ctx, BankApplication_UpdateUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bankApplicationClient) LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error) {
 	out := new(LoginUserResponse)
 	err := c.cc.Invoke(ctx, BankApplication_LoginUser_FullMethodName, in, out, opts...)
@@ -62,6 +73,7 @@ func (c *bankApplicationClient) LoginUser(ctx context.Context, in *LoginUserRequ
 // for forward compatibility
 type BankApplicationServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
+	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
 	mustEmbedUnimplementedBankApplicationServer()
 }
@@ -72,6 +84,9 @@ type UnimplementedBankApplicationServer struct {
 
 func (UnimplementedBankApplicationServer) CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedBankApplicationServer) UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
 func (UnimplementedBankApplicationServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
@@ -107,6 +122,24 @@ func _BankApplication_CreateUser_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BankApplication_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BankApplicationServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BankApplication_UpdateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BankApplicationServer).UpdateUser(ctx, req.(*UpdateUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BankApplication_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginUserRequest)
 	if err := dec(in); err != nil {
@@ -135,6 +168,10 @@ var BankApplication_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateUser",
 			Handler:    _BankApplication_CreateUser_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _BankApplication_UpdateUser_Handler,
 		},
 		{
 			MethodName: "LoginUser",

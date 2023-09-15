@@ -4,6 +4,7 @@ package pb;
 
 import "google/api/annotations.proto";
 import "rpc_create_user.proto";
+import "rpc_update_user.proto";
 import "rpc_login_user.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
@@ -11,7 +12,7 @@ option go_package = "BankApplication/pb";
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "Bank Application";
-    version: "1.1";
+    version: "1.2";
     contact: {
       name: "Grzegorz Mika";
       url: "https://github.com/GrzegorzMika";
@@ -28,6 +29,16 @@ service BankApplication {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       description: "Use this API to create a new user";
       summary: "Create a new user";
+    };
+  }
+  rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/update_user"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      description: "Use this API to update an existing user";
+      summary: "Update an existing user";
     };
   }
   rpc LoginUser (LoginUserRequest) returns (LoginUserResponse) {

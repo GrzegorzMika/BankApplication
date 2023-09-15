@@ -3,6 +3,7 @@ package gapi
 import (
 	"context"
 	"errors"
+	"log"
 
 	"BankApplication/internal/db"
 	"BankApplication/internal/pb"
@@ -18,6 +19,7 @@ import (
 func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	violations := validateCreateUserRequest(req)
 	if violations != nil {
+		log.Printf("Invalid request: %v", violations)
 		return nil, invalidArgumentError(violations)
 	}
 
