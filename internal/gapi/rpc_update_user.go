@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"BankApplication/internal/db"
 	"BankApplication/internal/pb"
@@ -36,6 +37,11 @@ func (server *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest)
 			return nil, status.Errorf(codes.Internal, "failed to hash password: %s", err)
 		}
 		arg.HashedPassword = pgtype.Text{String: hashedPassword, Valid: true}
+		arg.PasswordChangedAt = pgtype.Timestamp{
+			Time:             time.Now(),
+			InfinityModifier: 0,
+			Valid:            true,
+		}
 	}
 
 	user, err := server.store.UpdateUser(ctx, arg)
