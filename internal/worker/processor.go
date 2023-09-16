@@ -6,6 +6,12 @@ import (
 	"BankApplication/internal/db"
 
 	"github.com/hibiken/asynq"
+	"github.com/rs/zerolog/log"
+)
+
+const (
+	QueueSendVerificationEmail = "send-verify-email"
+	QueueDefault               = "default"
 )
 
 type TaskProcessor interface {
@@ -20,8 +26,21 @@ type RedisTaskProcessor struct {
 
 func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskProcessor {
 	return &RedisTaskProcessor{
-		server: asynq.NewServer(redisOpt, asynq.Config{}),
-		store:  store,
+		server: asynq.NewServer(redisOpt, asynq.Config{
+			Queues: map[string]int{
+				QueueSendVerificationEmail: 10,
+				QueueDefault:               5,
+			},
+			ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
+				log.Error().
+					Err(err).
+					Str("task_type", task.Type()).
+					Bytes("payload", task.Payload()).
+					Msg("failed to process task")
+			}),
+			Logger: NewLogger(),
+		}),
+		store: store,
 	}
 }
 
