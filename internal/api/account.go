@@ -8,7 +8,6 @@ import (
 	"BankApplication/internal/token"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -58,7 +57,7 @@ func (s *Server) getAccount(ctx *gin.Context) {
 	}
 	account, err := s.store.GetAccount(ctx, req.ID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, db.ErrRecordNotFound) {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}

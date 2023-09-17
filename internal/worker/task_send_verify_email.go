@@ -5,8 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"BankApplication/internal/db"
+
 	"github.com/hibiken/asynq"
-	"github.com/jackc/pgx/v5"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -46,7 +47,7 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 
 	user, err := processor.store.GetUser(ctx, payload.Username)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, db.ErrRecordNotFound) {
 			return fmt.Errorf("user not found: %w", asynq.SkipRetry)
 		}
 		return fmt.Errorf("failed to get user: %w", err)

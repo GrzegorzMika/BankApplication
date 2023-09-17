@@ -6,7 +6,6 @@ import (
 
 	"BankApplication/internal/util"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/require"
 )
 
@@ -67,7 +66,7 @@ func TestDeleteAccount(t *testing.T) {
 	getAccount, err := testQueries.GetAccount(context.Background(), account.ID)
 	require.Error(t, err)
 	require.Empty(t, getAccount)
-	require.Equal(t, pgx.ErrNoRows, err)
+	require.Equal(t, ErrRecordNotFound, err)
 }
 
 func TestListAccounts(t *testing.T) {

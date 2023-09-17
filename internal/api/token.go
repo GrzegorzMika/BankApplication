@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"time"
 
+	"BankApplication/internal/db"
+
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v5"
 )
 
 type refreshAccessTokenRequest struct {
@@ -34,7 +35,7 @@ func (s *Server) refreshAccessToken(ctx *gin.Context) {
 
 	session, err := s.store.GetSession(ctx, refreshPayload.ID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, db.ErrRecordNotFound) {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
 			return
 		}
