@@ -49,7 +49,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 
 	metadata := server.extractMetadata(ctx)
 	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
-		ID:           pgtype.UUID{Bytes: refreshPayload.ID, Valid: true},
+		ID:           refreshPayload.ID,
 		Username:     user.Username,
 		RefreshToken: refreshToken,
 		UserAgent:    metadata.UserAgent,
@@ -63,7 +63,7 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (
 
 	response := &pb.LoginUserResponse{
 		User:                  convertUser(user),
-		SessionId:             fmt.Sprintf("%x", session.ID.Bytes),
+		SessionId:             fmt.Sprintf("%x", session.ID),
 		AccessToken:           accessToken,
 		RefreshToken:          refreshToken,
 		AccessTokenExpiresAt:  timestamppb.New(accessPayload.ExpiredAt),

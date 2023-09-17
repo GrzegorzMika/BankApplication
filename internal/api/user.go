@@ -122,7 +122,7 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 
 	session, err := s.store.CreateSession(ctx, db.CreateSessionParams{
-		ID:           pgtype.UUID{Bytes: refreshPayload.ID, Valid: true},
+		ID:           refreshPayload.ID,
 		Username:     user.Username,
 		RefreshToken: refreshToken,
 		UserAgent:    ctx.Request.UserAgent(),
@@ -136,7 +136,7 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 
 	response := loginUserResponse{
-		SessionID:             session.ID.Bytes,
+		SessionID:             session.ID,
 		AccessToken:           accessToken,
 		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
 		RefreshToken:          refreshToken,

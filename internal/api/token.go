@@ -8,7 +8,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type refreshAccessTokenRequest struct {
@@ -33,7 +32,7 @@ func (s *Server) refreshAccessToken(ctx *gin.Context) {
 		return
 	}
 
-	session, err := s.store.GetSession(ctx, pgtype.UUID{Bytes: refreshPayload.ID, Valid: true})
+	session, err := s.store.GetSession(ctx, refreshPayload.ID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
