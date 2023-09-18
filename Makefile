@@ -12,6 +12,7 @@ sqlc:
 
 generate_mocks:
 	mockgen -package mockdb -destination internal/db/mocks/store.go BankApplication/internal/db Store
+	mockgen -package mockwk -destination internal/worker/mocks/distributor.go BankApplication/internal/worker TaskDistributor
 
 test:
 	sudo go test -shuffle=on -cover -v ./...
