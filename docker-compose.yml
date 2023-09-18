@@ -18,22 +18,32 @@ services:
       retries: 3
 
   redis:
-    image: "redis:latest"
+    image: "redis:7-alpine"
     restart: on-failure
     ports:
       - "6379:6379"
+    healthcheck:
+      test: "redis-cli ping"
+      start_period: 10s
+      interval: 2s
+      timeout: 2s
+      retries: 3
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
     restart: on-failure
+    ports:
+      - "8080:8080"
+      - "9090:9090"
     environment:
       - GO_ENV=production
       - GIN_MODE=release
       - DB_SOURCE=postgres://postgres:password@timescaledb:5432/bank_tests?sslmode=disable
+      - REDIS_ADDRESS=redis:6379
     depends_on:
       timescaledb:
         condition: service_healthy
-    ports:
-      - "8080:8080"
+      redis:
+        condition: service_healthy

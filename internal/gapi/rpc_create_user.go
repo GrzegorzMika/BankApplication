@@ -55,7 +55,7 @@ func (server *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest)
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == "23505" || pgErr.Code == "23503" {
-				return nil, status.Errorf(codes.AlreadyExists, "username already exists: %s", err)
+				return nil, status.Errorf(codes.AlreadyExists, err.Error())
 			}
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create user: %s", err)
