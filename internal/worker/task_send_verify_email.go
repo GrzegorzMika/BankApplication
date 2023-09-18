@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"BankApplication/internal/util"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -53,6 +54,30 @@ func (processor *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Cont
 		return fmt.Errorf("failed to get user: %w", err)
 	}
 
+	verifyEmail, err := processor.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
+		Username:   user.Username,
+		Email:      user.Email,
+		SecretCode: util.RandomString(32),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create verify email: %w", err)
+	}
+
+	subject := "Welcome to Bank Application"
+	verifyURL := fmt.Sprintf("http://localhost:8080/v1/verify_email?email_id=%d&secret_code=%s", verifyEmail.ID, verifyEmail.SecretCode)
+	content := fmt.Sprintf(`Hello %s,<br><br>
+
+	Thank you for registering with us!<br>
+	Please verify your email address by clicking the following link: <a href="%s"> Click here to verify </a><br><br>
+	
+	Thanks,<br>
+	Bank Application`, user.Username, verifyURL)
+
+	to := []string{user.Email}
+	err = processor.mailer.SendEmail(subject, content, to, nil, nil, nil)
+	if err != nil {
+		return fmt.Errorf("failed to send email: %w", err)
+	}
 	log.Info().
 		Str("type", task.Type()).
 		Bytes("payload", task.Payload()).

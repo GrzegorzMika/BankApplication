@@ -17,7 +17,7 @@ username,
 hashed_password,
 full_name,
 email
-) values ($1, $2, $3, $4) returning username, hashed_password, full_name, email, password_changed_at, created_at
+) values ($1, $2, $3, $4) returning username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
 `
 
 type CreateUserParams struct {
@@ -40,6 +40,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
+		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)
@@ -47,7 +48,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getUser = `-- name: GetUser :one
-select username, hashed_password, full_name, email, password_changed_at, created_at from users where username = $1 LIMIT 1
+select username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at from users where username = $1 LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
@@ -58,6 +59,7 @@ func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
+		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)
@@ -69,10 +71,11 @@ update users set
 hashed_password = coalesce($1, hashed_password),
 password_changed_at = coalesce($2, password_changed_at),
 full_name = coalesce($3, full_name),
-email = coalesce($4, email)
+email = coalesce($4, email),
+is_email_verified = coalesce($5, is_email_verified)
 WHERE
-username = $5
-RETURNING username, hashed_password, full_name, email, password_changed_at, created_at
+username = $6
+RETURNING username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
@@ -80,6 +83,7 @@ type UpdateUserParams struct {
 	PasswordChangedAt pgtype.Timestamp `json:"password_changed_at"`
 	FullName          pgtype.Text      `json:"full_name"`
 	Email             pgtype.Text      `json:"email"`
+	IsEmailVerified   pgtype.Bool      `json:"is_email_verified"`
 	Username          string           `json:"username"`
 }
 
@@ -89,6 +93,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.PasswordChangedAt,
 		arg.FullName,
 		arg.Email,
+		arg.IsEmailVerified,
 		arg.Username,
 	)
 	var i User
@@ -97,6 +102,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.HashedPassword,
 		&i.FullName,
 		&i.Email,
+		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
 		&i.CreatedAt,
 	)

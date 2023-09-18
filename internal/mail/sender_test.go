@@ -19,7 +19,7 @@ func TestSendEmailWithGmail(t *testing.T) {
 		<h1>Hello World!</h1>
 		<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore</p>
 		`
-	to := []string{""}
+	to := []string{}
 	attachFiles := []string{"./Lorem.md"}
 
 	err = sender.SendEmail(subject, content, to, nil, nil, attachFiles)

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   timescaledb:
-    image: timescale/timescaledb:latest-pg14
+    image: timescale/timescaledb:latest-pg15
     restart: on-failure
     environment:
       - POSTGRES_PASSWORD=password

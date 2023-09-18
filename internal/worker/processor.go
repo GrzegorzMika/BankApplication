@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"BankApplication/internal/mail"
 	"context"
 
 	"BankApplication/internal/db"
@@ -22,9 +23,10 @@ type TaskProcessor interface {
 type RedisTaskProcessor struct {
 	server *asynq.Server
 	store  db.Store
+	mailer mail.EmailSender
 }
 
-func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskProcessor {
+func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.EmailSender) TaskProcessor {
 	return &RedisTaskProcessor{
 		server: asynq.NewServer(redisOpt, asynq.Config{
 			Queues: map[string]int{
@@ -40,7 +42,8 @@ func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskPr
 			}),
 			Logger: NewLogger(),
 		}),
-		store: store,
+		store:  store,
+		mailer: mailer,
 	}
 }
 
